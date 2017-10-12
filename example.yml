@@ -1,0 +1,15 @@
+connection:
+  amqp: amqp://localhost
+  docker: unix:///var/run/docker.sock
+defaults:
+  sample_rate: 2s
+  scale_rate: 30s
+  upscale_delay: 3m
+  downscale_delay: 5m
+  coverage: .75
+services:
+  - service: helloworld
+    queue: helloworld
+    threshold: 25
+    minpods: 1
+    maxpods: 10
