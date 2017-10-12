@@ -38,7 +38,7 @@ func NewDockerSwarm(url string) DockerSwarm {
 
 func (swarm DockerSwarm) GetReplicas(name string) (int, error) {
 	ctx := context.Background()
-	srv, _, err := swarm.conn.ServiceInspectWithRaw(ctx, name, types.ServiceInspectOptions{})
+	srv, _, err := swarm.conn.ServiceInspectWithRaw(ctx, name)
 	if err != nil {
 		return 0, err
 	}
@@ -49,7 +49,7 @@ func (swarm DockerSwarm) GetReplicas(name string) (int, error) {
 
 func (swarm DockerSwarm) SetReplicas(name string, scale int) error {
 	ctx := context.Background()
-	service, _, err := swarm.conn.ServiceInspectWithRaw(ctx, name, types.ServiceInspectOptions{})
+	service, _, err := swarm.conn.ServiceInspectWithRaw(ctx, name)
 	if err != nil {
 		return err
 	}
