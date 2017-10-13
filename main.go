@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -19,12 +20,13 @@ type Orchestration interface {
 }
 
 func main() {
-	configfile := flag.String("c", "kogia.yml", "configuration file")
+	testOnly := flag.Bool("t", false, "test configuration and exit")
+	configFile := flag.String("c", "kogia.yml", "configuration file")
 	flag.Parse()
 
 	// --- read configuration
 	var cfg KogiaConfig
-	source, err := ioutil.ReadFile(*configfile)
+	source, err := ioutil.ReadFile(*configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,6 +34,10 @@ func main() {
 	err = yaml.Unmarshal(source, &cfg)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if *testOnly {
+		fmt.Printf("the configuration file %s syntax is ok\n", *configFile)
 	}
 
 	// --- validate configuration
@@ -50,7 +56,12 @@ func main() {
 	}
 
 	if !valid {
-		return
+		os.Exit(1)
+	}
+
+	if *testOnly {
+		fmt.Printf("configuration file %s test is successful\n", *configFile)
+		os.Exit(0)
 	}
 
 	// --- connect to input and orchestrator
