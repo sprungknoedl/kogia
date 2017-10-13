@@ -16,7 +16,7 @@ configuration for the docker swarm service _helloworld_:
 ```yaml
 connection:
   amqp: amqp://localhost:5672/
-  docker: unix:///var/run/docker.sock
+  docker: unix:///run/docker.sock
 defaults:
   sample_rate: 2s
   scale_rate: 30s

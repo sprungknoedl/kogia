@@ -1,6 +1,6 @@
 connection:
   amqp: amqp://localhost
-  docker: unix:///var/run/docker.sock
+  docker: unix:///run/docker.sock
 defaults:
   sample_rate: 2s
   scale_rate: 30s
