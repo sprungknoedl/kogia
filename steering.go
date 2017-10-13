@@ -18,8 +18,8 @@ type ConnectionConfig struct {
 }
 
 type AutoscaleConfig struct {
-	Service string `yaml:"service,omitempty"`
-	Metric  string `yaml:"metric,omitempty"`
+	Service string   `yaml:"service,omitempty"`
+	Metrics []string `yaml:"metrics,omitempty"`
 	// Coverage is the percent of samples that must be above the threshold to
 	// affect the required replica size.
 	Coverage float64 `yaml:"coverage,omitempty"`
@@ -50,8 +50,8 @@ func (cfg AutoscaleConfig) Validate() map[string]string {
 	if cfg.Service == "" {
 		errors["service"] = "can't be empty"
 	}
-	if cfg.Metric == "" {
-		errors["metric"] = "can't be empty"
+	if len(cfg.Metrics) == 0 {
+		errors["metrics"] = "can't be empty"
 	}
 	if cfg.Coverage <= 0 || cfg.Coverage > 1 {
 		errors["coverage"] = "invalid coverage, must be between 0 and 1"
@@ -90,8 +90,8 @@ func (cfg *AutoscaleConfig) FillWithDefaults(def AutoscaleConfig) {
 	if cfg.Service == "" {
 		cfg.Service = def.Service
 	}
-	if cfg.Metric == "" {
-		cfg.Metric = def.Metric
+	if len(cfg.Metrics) == 0 {
+		cfg.Metrics = def.Metrics
 	}
 	if cfg.Coverage == 0 {
 		cfg.Coverage = def.Coverage
@@ -137,13 +137,20 @@ func (scaler Autoscaler) Run() {
 	log.Printf("starting autoscaler for %s", scaler.Config.Service)
 	for range time.Tick(scaler.Config.SampleRate) {
 		ticks++
-		m, err := scaler.Input.GetMetric(scaler.Config.Metric)
-		if err != nil {
-			log.Printf("ERROR: failed to get metric for %s: %v", scaler.Config.Service, err)
-			continue
+
+		// collect metrics
+		metric := 0
+		for _, name := range scaler.Config.Metrics {
+			m, err := scaler.Input.GetMetric(name)
+			if err != nil {
+				log.Printf("ERROR: failed to get metric %q for %s: %v", name, scaler.Config.Service, err)
+				continue
+			}
+
+			metric += m
 		}
 
-		samples = append(samples, m)
+		samples = append(samples, metric)
 		if ticks%scaleRatio == 0 {
 			samples = samples[len(samples)-scaleRatio:] // trim samples
 			newReplicas := required(samples, scaler.Config.Coverage, scaler.Config.Threshold)

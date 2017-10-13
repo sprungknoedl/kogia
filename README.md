@@ -25,10 +25,11 @@ defaults:
   coverage: .75
 services:
   - service: helloworld
-    queue: helloworld
+    metrics: 
+    - queue.helloworld
     threshold: 10
-    minpods: 1
-    maxpods: 10
+    min_replicas: 1
+    max_replicas: 10
 ```
 
 ### Parameters
@@ -40,7 +41,7 @@ is not provided for a service, the default value specified in the configuration
 will be used. kogia doesn't provide any internal defaults!
 
 * `service`: name of the docker swarm service to scale.
-* `metric`: name of the AMQP queue used as load indicator.
+* `metrics`: list of names of the AMQP queues used as load indicator.
 * `coverage`: percentage of metrics required to calculate average queue length (recommended: `0.75`).
 * `threshold`: number of messages on a queue representing maximum load of **one** service replica.
 * `min_replicas`: minimum number of replicas for this service. kogia will never scale the service below this number. It is safe to specify `0`; as soon as some message are queued, kogia will scale the replicas to `1`.

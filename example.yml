@@ -9,7 +9,8 @@ defaults:
   coverage: .75
 services:
   - service: helloworld
-    queue: helloworld
+    metrics: 
+    - queue.helloworld
     threshold: 25
     minpods: 1
     maxpods: 10
