@@ -6,6 +6,7 @@ func TestRequired(t *testing.T) {
 	t.Run("nothing", requiredHelper([]int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0))
 	t.Run("almost", requiredHelper([]int{0, 0, 0, 0, 0, 0, 0, 1, 1, 1}, 0))
 	t.Run("lowline", requiredHelper([]int{0, 0, 0, 1, 1, 1, 1, 1, 1, 1}, 1))
+	t.Run("just-above-th", requiredHelper([]int{11, 11, 11, 11, 12, 12, 11, 11, 12, 13}, 2))
 	t.Run("linear-up", requiredHelper([]int{0, 10, 20, 30, 40, 50, 60, 70, 80, 90}, 3))
 	t.Run("linear-down", requiredHelper([]int{90, 80, 70, 60, 50, 40, 30, 20, 10, 0}, 3))
 	t.Run("spikes", requiredHelper([]int{1, 90, 90, 10, 10, 1, 1, 1, 1, 1}, 1))
